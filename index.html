@@ -25,7 +25,7 @@
             console.log(set) //dataset has the array of data
 
             //height & width sizing, consider media queries
-            const h = 500; const w = 500;
+            const h = 400; const w = 1000;
             //add an svg for the chart
             const svg = d3.create("svg").attr("width", w).attr('height', h)
 
@@ -38,15 +38,15 @@
             const start = set[0][0].split('-');
             const end = set[set.length - 1][0].split('-')
             //note new Date() uses month index!
-            const xScale = d3.scaleUtc([new Date(start[0], start[1] - 1, start[2]), new Date(end[0], end[1] - 1, end[2])])
+            const xScale = d3.scaleUtc([new Date(start[0], start[1] - 1, start[2]), new Date(end[0], end[1] - 1, end[2])], [0, (set.length - 1) * 2]) //the end of range reflects greatest value
             xScale.ticks(d3.utcYear.every(1))
             const createXax = d3.axisBottom().scale(xScale)
-            const xAx = svg.append('g').attr("id", "x-axis").attr("transform", `translate(0,${h - 10})`).call(createXax)
+            const xAx = svg.append('g').attr("id", "x-axis").attr("transform", `translate(10,${h - 10})`).call(createXax)
 
             //chart has g element y-axis id="y-axis"
-            const yScale = d3.scaleLinear([0, d3.max(set, (d) => d[1])]) //y axis scale from 0 to max value in dataset
+            const yScale = d3.scaleLinear([d3.min(set, (d) => d[1]), d3.max(set, (d) => d[1])], [h - 110, 0]) //scale linear should use higest and lowest value in set use height & width to match scale to chart
             const createYax = d3.axisLeft().scale(yScale)
-            const yAx = svg.append('g').attr("id", "y-axis").attr("transform", `translate(10,0)`).call(createYax)
+            const yAx = svg.append('g').attr("id", "y-axis").attr("transform", `translate(10,100)`).call(createYax)
             //y axis reflects gdp value
 
             //rect element for each data point, class="bar"
@@ -58,7 +58,7 @@
                 //.bar height represents correponding GDP
                 .attr("width", 5).attr("height", (d) => (d[1] / 60))
 
-            //TODO: get axes properly reflecting domain
+            //TODO: get axes properly reflecting domain, maybe proper range fixes?
             //data-date & corresponding .bar align with val on x-axis
 
             //data-gdp & corresponding .bar align with val on y-axis
